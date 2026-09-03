@@ -4,6 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table()
+@Table(schema = "world", name = "country")
 public class Country {
 }
