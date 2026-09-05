@@ -9,12 +9,12 @@ import org.hibernate.annotations.GeneratorType;
 @Getter
 @Setter
 @Entity
-@Table(schema = "world", name = "City")
+@Table(schema = "world", name = "city")
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    private Integer id;
 
     @Column(name = "name")
     private String name;
