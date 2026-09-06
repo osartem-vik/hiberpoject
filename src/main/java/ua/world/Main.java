@@ -14,8 +14,13 @@ import ua.world.dao.CountryDAO;
 import ua.world.domain.City;
 import ua.world.domain.Country;
 import ua.world.domain.CountryLanguage;
+import ua.world.redis.CityCountry;
+import ua.world.redis.Language;
+
 import java.util.*;
- import static java.util.Objects.nonNull;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.nonNull;
 
 public class Main {
     private final SessionFactory sessionFactory;
@@ -91,6 +96,37 @@ public class Main {
     public static void main(String[] args) {
         Main main = new Main();
         List<City> allCities = main.fetchData(main);
+        List<CityCountry> preparedData = main.transformData(allCities);
         main.shutdown();
+    }
+
+    private List<CityCountry> transformData(List<City> cities) {
+        return cities.stream().map(city -> {
+            CityCountry res = new CityCountry();
+            res.setId(city.getId());
+            res.setName(city.getName());
+            res.setPopulation(city.getPopulation());
+            res.setDistrict(city.getDistrict());
+
+            Country country = city.getCountry();
+            res.setAlternativeCountryCode(country.getAlternativeCode());
+            res.setContinent(country.getContinent());
+            res.setCountryCode(country.getCode());
+            res.setCountryName(country.getName());
+            res.setCountryPopulation(country.getPopulation());
+            res.setCountryRegion(country.getRegion());
+            res.setCountrySurfaceArea(country.getSurfaceArea());
+            Set<CountryLanguage> countryLanguages = country.getLanguages();
+            Set<Language> languages = countryLanguages.stream().map(cl -> {
+                Language language = new Language();
+                language.setLanguage(cl.getLanguage());
+                language.setOfficial(cl.getOfficial());
+                language.setPercentage(cl.getPercentage());
+                return language;
+            }).collect(Collectors.toSet());
+            res.setLanguages(languages);
+
+            return res;
+        }).collect(Collectors.toList());
     }
 }
